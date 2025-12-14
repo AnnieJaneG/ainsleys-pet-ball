@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ainsley's Pet Ball</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Inter', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+        <style>
+            .flex-container {
+                border: 4px inset #51545a; 
+            }
+            .flex-item {
+                transition: all 0.3s ease;
+                cursor: default;
+            }
+            .flex-item:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            .img-item {
+                border: 4px inset #51545a;
+            }
+        </style>
+    </head>
+
+    <body class="m-0 p-0 overflow-x-hidden bg-blue-300 min-h-screen sm:p=8 font-sans">
+
+        <div class="w-full h-96 bg-cover bg-center flex items-center justify-center"
+            style="background-image: url('./assets/tree-planting.png');">
+        
+            <div class="text-center p-10 bg-black bg-opacity-50 rounded-lg">
+                <h1 class="text-5xl text-white font-bold mb-2">Information</h1>
+                <p class="text-gray-200 text-lg">The why of it all, explained.</p>
+            </div>
+
+        </div>
+
+        <nav class="w-full bg-violet-400 rounded-xl">
+            <ul class="flex w-full">
+                <li class="flex-1 border-r rounded-xl border-gray-600"><a href="./index.html" class="block w-full text-center py-4 text-white hover:bg-gray-700 hover:rounded-xl">Home</a></li>
+                <li class="flex-1 border-r rounded-xl border-gray-600"><a href="./games.html" class="block w-full text-center py-4 text-white hover:bg-gray-700 hover:rounded-xl">Games</a></li>
+                <li class="flex-1 border-r rounded-xl border-gray-600"><a href="./books.html" class="block w-full text-center py-4 text-white hover:bg-gray-700 hover:rounded-xl">Books</a></li>
+                <li class="flex-1 border-r rounded-xl border-gray-600"><a href="./art.html" class="block w-full text-center py-4 text-white hover:bg-gray-700 hover:rounded-xl">Art</a></li>
+                <li class="flex-1 border-r rounded-xl border-gray-600"><a href="./Info.html" class="block w-full text-center py-4 text-white hover:bg-gray-700 hover:rounded-xl">Information</a></li>
+            </ul>
+        </nav>
+
+        <div class="p-4 md:p-8">
+            <br>
+            <hr>
+            <br>
+            <h2 class="text-3xl text-purple-600">General Information</h2>
+            <br>
+            <hr>
+            <br>
+            <h3 class="text-xl text-purple-500 text-center">Education and Entertainment</h3>
+            <br>
+            <hr>
+            <br>
+            <p>This website is a platform to teach Ainsley about creative expression, technology, and the intersection of the two. The ultimate goal is to educate her on the value and power of investing. By leveraging her creativity to fund a brokerage account, we make the learning process fun and tangible. As her father, I often wish the technology available to her today had been available to me at her age. With that in mind, I want to ensure she captures every opportunity this access provides.</p>
+            <br>
+            <hr>
+            <br>
+            <h3 class="text-xl text-purple-500 text-center">Writing</h3>
+            <br>
+            <hr>
+            <br>
+            <p>Ainsley deeply enjoys the process of reading and writing. We believe these skills are powerful tools, a true gateway to limitless knowledge. Our eventual goal is to help Ainsley produce her own original stories and coloring books, publishing them for friends and family to enjoy.</p>
+            <br>
+            <hr>
+            <br>
+            <h3 class="text-xl text-purple-500 text-center">Art</h3>
+            <br>
+            <hr>
+            <br>
+            <p>The ability to harness creativity starts at a very young age. Our focus here is on design, symbolism, and developing a critical eye. Ainsley immensely enjoys commingling her illustrations with creative writing. As she draws, she constantly impresses me with her natural ability. I try to guide that talent with lessons on perspective, specifically, learning to draw what she actually sees, rather than the symbols her mind creates. She absorbs these concepts quickly. My only hope is to propel her creativity as far as she can take it, in whatever direction she chooses.</p>
+            <br>
+            <hr>
+            <br>
+            <h3 class="text-xl text-purple-500 text-center">Investing in Ainsley's Future</h3>
+            <br>
+            <hr>
+            <br>
+            <p>The power of investing is a lesson that simply isn't taught enough. Over the years, I have learned that compounding interest requires one specific ingredient: time. The more time compounding has to work, the more powerful the return.</p>
+            <br>
+            <p>I am managing a custodial brokerage account for Ainsley and will be using it to teach her financial literacy throughout her early years. By the time she turns 18, my hope is that she has a strong grasp of financial independence. I am currently setting up a contribution link so that family and friends who wish to send a gift may do so directly to her brokerage. Along with my own funding, any proceeds from Ainsley's creative writing on Apple Books or Kindle will be deposited here. She deserves to enjoy not just her childhood, but her young adulthood as well.</p>
+        </div>
+    </body>
+
+    <footer class="mt-12 p-4 border-t-2 border-purple-400 text-center text-gray-600">
+        <p>
+            <a href="mailto:kameron.griffin@yahoo.com" class="text-purple-600 hover:text-purple-800 font-medium transition duration-300">
+                Send a message to Daddy
+            </a>
+        </p>
+    </footer>
+</html>
