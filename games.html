@@ -1452,9 +1452,9 @@
             let screenShake = 0;
             let trackPos = 0;
 
-            // Speed tuning
-            const BASE_SPEED = 18;
-            const MAX_SPEED = 38;
+            // Speed tuning (Progressive 3-Stage Ramp)
+            const BASE_SPEED = 12;
+            const MAX_SPEED = 32;
             let currentSpeed = BASE_SPEED;
 
             // --- Player Car (Discrete 3 Lanes) ---
@@ -1552,26 +1552,40 @@
                 }
             }
 
-            // --- Obstacles & Traffic System ---
+            // --- Obstacles & Traffic System (Progressive 3-Stage Ramp) ---
             const obstacles = [];
             const OBSTACLE_TYPES = ['car_blue', 'car_yellow', 'truck', 'cones', 'oil'];
-            let spawnCooldown = 60;
+            let spawnCooldown = 120; // Calm opening stretch on start
 
             function spawnObstacleWave() {
                 // Ensure at least one lane is completely clear
                 const lanes = [0, 1, 2];
-                // Shuffle lanes
                 for (let i = lanes.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [lanes[i], lanes[j]] = [lanes[j], lanes[i]];
                 }
 
-                // 70% chance 1 obstacle, 30% chance 2 obstacles
-                const count = Math.random() < 0.32 ? 2 : 1;
+                // Progressive 3-Stage Density Scaling:
+                let count = 1;
+                let pool = OBSTACLE_TYPES;
+
+                if (score < 300) {
+                    // Stage 1 (0–300 pts): Very thin traffic, strictly 1 obstacle at a time, easier types
+                    count = 1;
+                    pool = ['car_blue', 'car_yellow', 'cones'];
+                } else if (score < 800) {
+                    // Stage 2 (300–800 pts): Moderate traffic, occasional 2-obstacle wave (18% chance)
+                    count = Math.random() < 0.18 ? 2 : 1;
+                    pool = OBSTACLE_TYPES;
+                } else {
+                    // Stage 3 (800+ pts): Full arcade rush, 38% chance of 2-obstacle wave
+                    count = Math.random() < 0.38 ? 2 : 1;
+                    pool = OBSTACLE_TYPES;
+                }
 
                 for (let k = 0; k < count; k++) {
                     const lane = lanes[k];
-                    const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+                    const type = pool[Math.floor(Math.random() * pool.length)];
                     let speedMult = 0;
                     if (type === 'car_blue') speedMult = 0.52;
                     else if (type === 'car_yellow') speedMult = 0.65;
@@ -1580,7 +1594,7 @@
 
                     obstacles.push({
                         lane: lane,
-                        z: 2400 + k * 80,
+                        z: 2400 + k * 85,
                         type: type,
                         speedMult: speedMult,
                         passed: false
@@ -1594,8 +1608,17 @@
                 spawnCooldown -= (currentSpeed / BASE_SPEED);
                 if (spawnCooldown <= 0) {
                     spawnObstacleWave();
-                    // Dynamically decrease cooldown as game progresses for thrilling challenge
-                    spawnCooldown = Math.max(38, 75 - (distanceMeters / 150));
+                    // Progressive cooldown scaling between waves
+                    if (score < 300) {
+                        // Stage 1: Generous spacing (145 down to 120 frames, ~2.4s to 2.0s gap)
+                        spawnCooldown = 145 - (score / 300) * 25;
+                    } else if (score < 800) {
+                        // Stage 2: Moderate spacing (120 down to 75 frames)
+                        spawnCooldown = 120 - ((score - 300) / 500) * 45;
+                    } else {
+                        // Stage 3: Intense arcade rush (75 down to 50 frames)
+                        spawnCooldown = Math.max(50, 75 - ((score - 800) / 800) * 25);
+                    }
                 }
 
                 for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -1617,10 +1640,10 @@
                         playPassChime();
                     }
 
-                    // Collision detection with player at z ~ 200
+                    // Collision detection with player at z ~ 200 (fair, generous hitbox)
                     if (ob.z >= 165 && ob.z <= 220) {
                         const obstacleOffset = LANE_OFFSETS[ob.lane];
-                        if (Math.abs(player.laneX - obstacleOffset) < 0.38) {
+                        if (Math.abs(player.laneX - obstacleOffset) < 0.34) {
                             triggerCrash();
                             break;
                         }
@@ -2266,6 +2289,7 @@
                 distanceMeters = 0;
                 carsPassed = 0;
                 currentSpeed = BASE_SPEED;
+                spawnCooldown = 120;
                 obstacles.length = 0;
                 particles.length = 0;
                 player.reset();
@@ -2279,6 +2303,7 @@
                     distanceMeters = 0;
                     carsPassed = 0;
                     currentSpeed = BASE_SPEED;
+                    spawnCooldown = 120;
                     obstacles.length = 0;
                     player.shiftLane(dir);
                 } else if (gameState === 'PLAYING') {
@@ -2341,11 +2366,21 @@
                     gameOverTimer++;
                 }
 
-                // Smooth acceleration over time
+                // Progressive 3-Stage Speed Ramp
                 if (gameState === 'PLAYING') {
-                    currentSpeed = Math.min(MAX_SPEED, BASE_SPEED + (distanceMeters / 120));
+                    if (score < 300) {
+                        // Stage 1: Relaxed cruising (12 to 15)
+                        currentSpeed = BASE_SPEED + (score / 300) * 3;
+                    } else if (score < 800) {
+                        // Stage 2: Moderate traffic pace (15 to 22)
+                        currentSpeed = 15 + ((score - 300) / 500) * 7;
+                    } else {
+                        // Stage 3: Fast arcade rush (22 up to 32)
+                        currentSpeed = Math.min(MAX_SPEED, 22 + ((score - 800) / 700) * 10);
+                    }
+
                     trackPos += currentSpeed;
-                    distanceMeters += currentSpeed * 0.14;
+                    distanceMeters += currentSpeed * 0.12;
                     score = Math.floor(distanceMeters) + (carsPassed * 50);
 
                     if (score > highScore) {
@@ -3503,32 +3538,54 @@
 
             function drawStartScreen() {
                 ctx.save();
-                ctx.fillStyle = 'rgba(6, 78, 59, 0.88)';
+                // Compact & Centered Card (WIDTH = 560, HEIGHT = 260, GROUND_Y = 205)
+                const cardW = 390;
+                const cardH = 146;
+                const cardX = (WIDTH - cardW) / 2; // 85
+                const cardY = 30; // 30 to 176 (29px clearance above ground line)
+
+                ctx.fillStyle = 'rgba(6, 78, 59, 0.92)';
                 ctx.strokeStyle = '#34d399';
                 ctx.lineWidth = 3;
-                roundRect(ctx, 60, 45, 440, 170, 16, true, true);
+                roundRect(ctx, cardX, cardY, cardW, cardH, 16, true, true);
 
-                ctx.font = 'bold 22px Inter, sans-serif';
+                // Dedicated Inner Title Banner Plate
+                const bannerW = 300;
+                const bannerH = 30;
+                const bannerX = (WIDTH - bannerW) / 2;
+                const bannerY = cardY + 12; // 42
+
+                ctx.fillStyle = 'rgba(2, 44, 34, 0.95)';
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 1.8;
+                roundRect(ctx, bannerX, bannerY, bannerW, bannerH, 8, true, true);
+
+                // Title Banner with Shields
+                ctx.font = 'bold 16px Inter, sans-serif';
                 ctx.fillStyle = '#fde047';
                 ctx.textAlign = 'center';
-                ctx.fillText('🛡️ THE ROYAL STEED 🛡️', WIDTH / 2, 82);
+                ctx.fillText('🛡️ THE ROYAL STEED 🛡️', WIDTH / 2, bannerY + 21);
 
-                ctx.font = '600 13px Inter, sans-serif';
+                // Subtitle
+                ctx.font = '600 11px Inter, sans-serif';
                 ctx.fillStyle = '#a7f3d0';
-                ctx.fillText('Fairytale Jump & Dash Runner', WIDTH / 2, 108);
+                ctx.fillText('Fairytale Jump & Dash Runner', WIDTH / 2, cardY + 60);
 
-                const pulse = Math.sin(frames * 0.08) * 3;
-                ctx.font = 'bold 16px Inter, sans-serif';
+                // Action Leap Prompt (gentle pulse)
+                const pulse = Math.sin(frames * 0.08) * 2.5;
+                ctx.font = 'bold 14px Inter, sans-serif';
                 ctx.fillStyle = '#ffffff';
-                ctx.fillText('Tap Screen or Press Space / Up to Leap!', WIDTH / 2, 146 + pulse);
+                ctx.fillText('Tap Screen or Press Space / Up to Leap!', WIDTH / 2, cardY + 86 + pulse);
 
-                ctx.font = 'bold 12px Inter, sans-serif';
-                ctx.fillStyle = '#fbbf24';
-                ctx.fillText('✨ Press again in mid-air to DOUBLE JUMP! ✨', WIDTH / 2, 178);
+                // Double Jump Tip
+                ctx.font = 'bold 11px Inter, sans-serif';
+                ctx.fillStyle = '#facc15';
+                ctx.fillText('✨ Press again in mid-air to DOUBLE JUMP! ✨', WIDTH / 2, cardY + 112);
 
+                // Personal Best High Score
                 ctx.font = 'bold 11px Inter, sans-serif';
                 ctx.fillStyle = '#cbd5e1';
-                ctx.fillText(`🏆 Personal Best: ${highScore} M`, WIDTH / 2, 200);
+                ctx.fillText(`🏆 Personal Best: ${highScore} M`, WIDTH / 2, cardY + 132);
 
                 ctx.restore();
             }
