@@ -2179,31 +2179,32 @@
 
             function drawStartScreen() {
                 ctx.save();
-                ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
                 ctx.strokeStyle = '#f59e0b';
                 ctx.lineWidth = 3;
                 roundRect(ctx, 35, 110, 330, 245, 18, true, true);
 
-                ctx.font = 'bold 24px Inter, sans-serif';
+                // Clean text title without flanking emojis to ensure perfect centering
+                ctx.font = 'bold 22px Inter, sans-serif';
                 ctx.fillStyle = '#fbbf24';
                 ctx.textAlign = 'center';
-                ctx.fillText('🏎️ RETRO RACER 🏎️', WIDTH / 2, 155);
+                ctx.fillText('RETRO RACER', WIDTH / 2, 155);
 
-                ctx.font = '600 14px Inter, sans-serif';
+                ctx.font = '600 13px Inter, sans-serif';
                 ctx.fillStyle = '#f43f5e';
                 ctx.fillText('80s Sunset Highway', WIDTH / 2, 185);
 
                 const pulse = Math.sin(frames * 0.08) * 3;
-                ctx.font = 'bold 17px Inter, sans-serif';
+                ctx.font = 'bold 15px Inter, sans-serif';
                 ctx.fillStyle = '#38bdf8';
-                ctx.fillText('Tap Screen or Press Left/Right to Start!', WIDTH / 2, 240 + pulse);
+                ctx.fillText('Tap Screen or Press Left / Right!', WIDTH / 2, 238 + pulse);
 
-                ctx.font = 'bold 13px Inter, sans-serif';
+                ctx.font = 'bold 12px Inter, sans-serif';
                 ctx.fillStyle = '#94a3b8';
-                ctx.fillText('Dodge traffic, construction cones & oil slicks!', WIDTH / 2, 280);
+                ctx.fillText('Dodge cars, cones & oil slicks!', WIDTH / 2, 278);
 
                 ctx.fillStyle = '#e2e8f0';
-                ctx.fillText(`🏆 High Score: ${highScore}`, WIDTH / 2, 320);
+                ctx.fillText(`🏆 High Score: ${highScore}`, WIDTH / 2, 314);
 
                 ctx.restore();
             }
@@ -3550,8 +3551,8 @@
                 roundRect(ctx, cardX, cardY, cardW, cardH, 16, true, true);
 
                 // Dedicated Inner Title Banner Plate
-                const bannerW = 300;
-                const bannerH = 30;
+                const bannerW = 250;
+                const bannerH = 28;
                 const bannerX = (WIDTH - bannerW) / 2;
                 const bannerY = cardY + 12; // 42
 
@@ -3560,11 +3561,11 @@
                 ctx.lineWidth = 1.8;
                 roundRect(ctx, bannerX, bannerY, bannerW, bannerH, 8, true, true);
 
-                // Title Banner with Shields
-                ctx.font = 'bold 16px Inter, sans-serif';
+                // Clean title without flanking emojis for perfect centering
+                ctx.font = 'bold 15px Inter, sans-serif';
                 ctx.fillStyle = '#fde047';
                 ctx.textAlign = 'center';
-                ctx.fillText('🛡️ THE ROYAL STEED 🛡️', WIDTH / 2, bannerY + 21);
+                ctx.fillText('THE ROYAL STEED', WIDTH / 2, bannerY + 19);
 
                 // Subtitle
                 ctx.font = '600 11px Inter, sans-serif';
